@@ -3,19 +3,17 @@ const bodyParser = require("body-parser");
 const request = require("request");
 
 const app = express();
-const apiKey = "33ad9896c0c74499dad445f2a6c67242";
+const apiKey = "bda15ecc32f0300d6bdc415ac718c430";
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 app.get("/", function(req, res) {
-    // res.render("index.ejs");
     res.render("index", { weather: null, error: null });
 });
 
 app.post("/", (req, res) => {
-    // let city = "Jakarta";
     let city = req.body.city;
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
     request(url, (err, response, body) => {
@@ -29,7 +27,10 @@ app.post("/", (req, res) => {
                     error: "Error! Please try again!",
                 });
             } else {
-                let weatherText = `It's ${weather.main.temp} degrees in ${weather.name}!`;
+                const kelvinTemp = weather.main.temp;
+                const weatherCelcius = Math.floor(kelvinTemp - 273);
+
+                let weatherText = `It's ${weatherCelcius} degrees Celcius in ${weather.name}!`;
                 res.render("index", { weather: weatherText, error: null });
             }
         }
